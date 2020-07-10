@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/spf13/viper"
 	"os"
 
-	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/get"
+	"github.com/spf13/viper"
+
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/export"
+	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/get"
+	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/list"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/set"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/version"
 	homedir "github.com/mitchellh/go-homedir"
@@ -26,6 +28,7 @@ func configureCLI() *cobra.Command {
 	rootCommand.AddCommand(set.Command())
 	rootCommand.AddCommand(version.Command())
 	rootCommand.AddCommand(export.Command())
+	rootCommand.AddCommand(list.Command())
 
 	homeDir, err := homedir.Dir()
 
