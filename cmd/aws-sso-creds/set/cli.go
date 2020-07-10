@@ -5,6 +5,7 @@ import (
 	"github.com/jaxxstorm/aws-sso-creds/pkg/credentials"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"time"
 
 	"github.com/bigkevmcd/go-configparser"
 )
@@ -46,6 +47,10 @@ func Command() *cobra.Command {
 
 			credsFile.SaveWithDelimiter(fmt.Sprintf("%s/.aws/credentials", homeDir), "=")
 			configFile.SaveWithDelimiter(fmt.Sprintf("%s/.aws/config", homeDir), "=")
+
+			fmt.Println(fmt.Sprintf("credentials saved to profile: %s", args[0]))
+			fmt.Println(fmt.Sprintf("these credentials will expire:  %s", time.Unix(*creds.RoleCredentials.Expiration, 0).Format(time.UnixDate)))
+
 			return nil
 		},
 	}

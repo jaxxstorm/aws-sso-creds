@@ -11,5 +11,5 @@ type SSOCacheConfig struct {
 	StartUrl    string `json:"startUrl"`
 	Region      string `json:"region"`
 	AccessToken string `json:"accessToken"`
-	ExpiresAt   string `json:"expiresAt"` // FIXME not a string
+	ExpiresAt   string `json:"expiresAt"`
 }

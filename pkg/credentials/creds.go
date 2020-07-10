@@ -22,7 +22,7 @@ func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsO
 		return nil, fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 	}
 
-	token, err := config.GetSSOToken(cacheFiles, *ssoConfig)
+	token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homedir)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving SSO token from cache files: %w", err)
 	}

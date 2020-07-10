@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
+	"time"
 )
 
 // GetSSOToken loops through all the caches files and extracts a valid token to use
-func GetSSOToken(files []os.FileInfo, ssoConfig SSOConfig) (string, error) {
+func GetSSOToken(files []os.FileInfo, ssoConfig SSOConfig, homedir string) (string, error) {
 
 	if len(files) > 0 {
 		// loop through all the files
 		for _, file := range files {
 			// read the contents into a JSON byte
-			jsonContent, err := ioutil.ReadFile(fmt.Sprintf("/Users/lbriggs/.aws/sso/cache/%s", file.Name()))
+			jsonContent, err := ioutil.ReadFile(fmt.Sprintf("%s/.aws/sso/cache/%s", homedir, file.Name()))
 			if err != nil {
 				panic(err)
 			}
@@ -24,15 +26,24 @@ func GetSSOToken(files []os.FileInfo, ssoConfig SSOConfig) (string, error) {
 
 			json.Unmarshal(jsonContent, &cacheData)
 
-			if (cacheData.StartUrl == ssoConfig.StartUrl) {
-				return cacheData.AccessToken, nil
+			// check if the file has a start url, if it doesn't, ignore it
+			if cacheData.StartUrl == ssoConfig.StartUrl {
+				// check if the file has an expiry time, if it doesn't ignore it
+				if cacheData.ExpiresAt != "" {
+					t, err := time.Parse(time.RFC3339, strings.Replace(cacheData.ExpiresAt, "UTC", "+00:00", -1))
+					if err != nil {
+						continue
+					}
+					if t.Unix() > time.Now().Unix() {
+						return cacheData.AccessToken, nil
+					}
+
+				}
 			}
-
-			return "", fmt.Errorf("Unable to find a valid access token")
-
+			continue
 		}
 	}
 
-	return "", fmt.Errorf("No cache files found")
+	return "", fmt.Errorf("no valid cache files found, you might need to run aws sso login")
 
 }

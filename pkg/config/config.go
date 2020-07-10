@@ -23,19 +23,19 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 	if p.HasSection(section) {
 		ssoStartUrl, err := p.Get(section, "sso_start_url")
 		if err != nil {
-			fmt.Println("no SSO url in profile")
+			return nil, fmt.Errorf("no SSO url in profile: %s", profile)
 		}
 		ssoRegion, err := p.Get(section, "sso_region")
 		if err != nil {
-			fmt.Println("no SSO region in profile")
+			return nil,  fmt.Errorf("no SSO region in profile: %s", profile)
 		}
 		ssoAccountId, err := p.Get(section, "sso_account_id")
 		if err != nil {
-			fmt.Println("no SSO account id in profile")
+			return nil, fmt.Errorf("no SSO account id in profile: %s", profile)
 		}
 		ssoRoleName, err := p.Get(section, "sso_role_name")
 		if err != nil {
-			fmt.Println("no SSO role name in profile")
+			return nil, fmt.Errorf("no SSO role name in profile: %s", profile)
 		}
 
 		return &SSOConfig{
