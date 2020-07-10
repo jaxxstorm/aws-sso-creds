@@ -1,6 +1,6 @@
 # aws-sso-creds
 
-`aws-sso-creds` is a helper utility to retrieve [temporary credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html) when you use the you're using [AWS SSO](https://aws.amazon.com/single-sign-on/)
+`aws-sso-creds` is a helper utility to retrieve [temporary credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html) when using [AWS SSO](https://aws.amazon.com/single-sign-on/)
 
 ## About
 
