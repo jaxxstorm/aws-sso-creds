@@ -25,3 +25,14 @@ changelog:
   skip: true
 release:
   prerelease: auto
+brews:
+  - 
+    name: aws-sso-creds
+    github:
+      owner: jaxxstorm
+      name: homebrew-tap
+    commit_author:
+      name: GitHub Actions
+      email: bot@leebriggs.co.uk
+    homepage: "https://leebriggs.co.uk"
+    description: "Helper utility to get temporary credentials from AWS SSO"
