@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"os"
 
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/get"
+	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/export"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/set"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/version"
-	"github.com/jaxxstorm/aws-sso-creds/pkg/contract"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
@@ -26,6 +25,7 @@ func configureCLI() *cobra.Command {
 	rootCommand.AddCommand(get.Command())
 	rootCommand.AddCommand(set.Command())
 	rootCommand.AddCommand(version.Command())
+	rootCommand.AddCommand(export.Command())
 
 	homeDir, err := homedir.Dir()
 
@@ -46,7 +46,6 @@ func main() {
 	rootCommand := configureCLI()
 
 	if err := rootCommand.Execute(); err != nil {
-		contract.IgnoreIoError(fmt.Fprintf(os.Stderr, "%s", err))
 		os.Exit(1)
 	}
 }

@@ -12,12 +12,13 @@ import (
 
 func Command() *cobra.Command {
 	command := &cobra.Command{
-		Use:   "set",
+		Use:   "set PROFILE",
 		Short: "Create a new AWS profile with temporary credentials",
 		Long:  "Create a new AWS profile with temporary credentials",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
+			cmd.SilenceUsage = true
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
