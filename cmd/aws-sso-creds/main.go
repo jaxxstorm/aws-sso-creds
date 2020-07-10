@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/get"
+	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/set"
 	"github.com/jaxxstorm/aws-sso-creds/pkg/contract"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -22,6 +23,7 @@ func configureCLI() *cobra.Command {
 	}
 
 	rootCommand.AddCommand(get.Command())
+	rootCommand.AddCommand(set.Command())
 
 	homeDir, err := homedir.Dir()
 

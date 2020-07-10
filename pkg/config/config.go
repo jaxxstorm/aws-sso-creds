@@ -5,12 +5,12 @@ import (
 	"github.com/bigkevmcd/go-configparser"
 )
 
+
 // GetSSOConfig retrieves the SSO configuration for a given AWS profile
-func GetSSOConfig(profile string) (*SSOConfig, error) {
+func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 
 	// parse the configuration file
-	// FIXME: make this configurable or use go-homedir
-	p, err := configparser.NewConfigParserFromFile("/Users/lbriggs/.aws/config")
+	p, err := configparser.NewConfigParserFromFile(fmt.Sprintf("%s/.aws/config", homedir))
 
 	if err != nil {
 		return nil, err

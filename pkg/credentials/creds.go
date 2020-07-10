@@ -12,7 +12,7 @@ import (
 
 func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsOutput, error) {
 
-	ssoConfig, err := config.GetSSOConfig(profile)
+	ssoConfig, err := config.GetSSOConfig(profile, homedir)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving SSO config: %w", err)
 	}
