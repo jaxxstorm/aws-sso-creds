@@ -1,0 +1,27 @@
+before:
+  hooks:
+    - go mod download
+builds:
+- env:
+  - CGO_ENABLED=0
+  - GO111MODULE=on
+  goos:
+    - darwin
+    - windows
+    - linux
+  goarch:
+    - amd64
+  ldflags: -X github.com/jaxxstorm/aws-sso-creds/pkg/version.Version={{.Version}}
+  binary: aws-sso-creds
+  main: ./cmd/aws-sso-creds/main.go
+archives:
+- name_template: "{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
+  format_overrides:
+    - goos: windows
+      format: zip
+snapshot:
+  name_template: "{{ .Tag }}-SNAPSHOT"
+changelog:
+  skip: true
+release:
+  prerelease: auto
