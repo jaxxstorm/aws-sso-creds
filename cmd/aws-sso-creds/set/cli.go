@@ -26,7 +26,7 @@ func Command() *cobra.Command {
 				return fmt.Errorf("no profile specified")
 			}
 
-			creds, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
 
 			credsFile, err := configparser.NewConfigParserFromFile(fmt.Sprintf("%s/.aws/credentials", homeDir))
 			if err != nil {

@@ -10,21 +10,21 @@ import (
 	"github.com/jaxxstorm/aws-sso-creds/pkg/config"
 )
 
-func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsOutput, error) {
+func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsOutput, string, error) {
 
 	ssoConfig, err := config.GetSSOConfig(profile, homedir)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving SSO config: %w", err)
+		return nil, "", fmt.Errorf("error retrieving SSO config: %w", err)
 	}
 
 	cacheFiles, err := ioutil.ReadDir(fmt.Sprintf("%s/.aws/sso/cache", homedir))
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
+		return nil, "", fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 	}
 
 	token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homedir)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving SSO token from cache files: %w", err)
+		return nil, "", fmt.Errorf("error retrieving SSO token from cache files: %w", err)
 	}
 
 	sess := session.Must(session.NewSession())
@@ -37,9 +37,9 @@ func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsO
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving credentials from AWS: %w", err)
+		return nil, "", fmt.Errorf("error retrieving credentials from AWS: %w", err)
 	}
 
-	return creds, nil
+	return creds, ssoConfig.AccountID, nil
 
 }

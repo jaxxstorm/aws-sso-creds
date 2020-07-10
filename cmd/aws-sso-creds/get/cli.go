@@ -30,13 +30,13 @@ func Command() *cobra.Command {
 				return fmt.Errorf("no profile specified")
 			}
 
-			creds, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, accountID, err := credentials.GetSSOCredentials(profile, homeDir)
 
 			if err != nil {
 				return err
 			}
 
-			fmt.Println("Your temporary credentials are:")
+			fmt.Println(Sprintf("Your temporary credentials for account %s are:", White(accountID)))
 			fmt.Println("")
 
 			fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId)
