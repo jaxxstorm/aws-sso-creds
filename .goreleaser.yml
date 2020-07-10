@@ -34,5 +34,6 @@ brews:
     commit_author:
       name: GitHub Actions
       email: bot@leebriggs.co.uk
+    folder: Formula
     homepage: "https://leebriggs.co.uk"
     description: "Helper utility to get temporary credentials from AWS SSO"
