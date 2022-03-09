@@ -29,7 +29,7 @@ release:
 brews:
   - 
     name: aws-sso-creds
-    github:
+    tap:
       owner: jaxxstorm
       name: homebrew-tap
     commit_author:
