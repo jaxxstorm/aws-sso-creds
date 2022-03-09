@@ -7,6 +7,7 @@ import (
 
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/export"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/get"
+	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/helper"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/list"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/set"
 	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/version"
@@ -29,6 +30,7 @@ func configureCLI() *cobra.Command {
 	rootCommand.AddCommand(version.Command())
 	rootCommand.AddCommand(export.Command())
 	rootCommand.AddCommand(list.Command())
+	rootCommand.AddCommand(helper.Command())
 
 	homeDir, err := homedir.Dir()
 

@@ -11,6 +11,7 @@ builds:
     - linux
   goarch:
     - amd64
+    - arm64
   ldflags: -X github.com/jaxxstorm/aws-sso-creds/pkg/version.Version={{.Version}}
   binary: aws-sso-creds
   main: ./cmd/aws-sso-creds/main.go
