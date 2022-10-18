@@ -2,10 +2,12 @@ package set
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/jaxxstorm/aws-sso-creds/pkg/credentials"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"time"
 
 	"github.com/bigkevmcd/go-configparser"
 )
@@ -21,19 +23,32 @@ func Command() *cobra.Command {
 			cmd.SilenceUsage = true
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
+			credsPath := fmt.Sprintf("%s/.aws/credentials", homeDir)
+			cfgPath := fmt.Sprintf("%s/.aws/config", homeDir)
 
 			if profile == "" {
 				return fmt.Errorf("no profile specified")
 			}
 
 			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
-
-			credsFile, err := configparser.NewConfigParserFromFile(fmt.Sprintf("%s/.aws/credentials", homeDir))
 			if err != nil {
 				return err
 			}
 
-			configFile, err := configparser.NewConfigParserFromFile(fmt.Sprintf("%s/.aws/config", homeDir))
+			credsFile, err := configparser.NewConfigParserFromFile(credsPath)
+			if os.IsNotExist(err) {
+				// Ensure the new empty credentials file is not readable by others.
+				if f, err := os.OpenFile(credsPath, os.O_CREATE, 0600); err != nil {
+					return err
+				} else {
+					f.Close()
+				}
+				credsFile = configparser.New()
+			} else if err != nil {
+				return err
+			}
+
+			configFile, err := configparser.NewConfigParserFromFile(cfgPath)
 			if err != nil {
 				return err
 			}
@@ -46,11 +61,11 @@ func Command() *cobra.Command {
 			credsFile.Set(args[0], "aws_secret_access_key", *creds.RoleCredentials.SecretAccessKey)
 			credsFile.Set(args[0], "aws_session_token", *creds.RoleCredentials.SessionToken)
 
-			credsFile.SaveWithDelimiter(fmt.Sprintf("%s/.aws/credentials", homeDir), "=")
-			configFile.SaveWithDelimiter(fmt.Sprintf("%s/.aws/config", homeDir), "=")
+			credsFile.SaveWithDelimiter(credsPath, "=")
+			configFile.SaveWithDelimiter(cfgPath, "=")
 
-			fmt.Println(fmt.Sprintf("credentials saved to profile: %s", args[0]))
-			fmt.Println(fmt.Sprintf("these credentials will expire:  %s", time.Unix(*creds.RoleCredentials.Expiration, 0).Format(time.UnixDate)))
+			fmt.Printf("credentials saved to profile: %s\n", args[0])
+			fmt.Printf("these credentials will expire:  %s\n", time.Unix(*creds.RoleCredentials.Expiration, 0).Format(time.UnixDate))
 
 			return nil
 		},
