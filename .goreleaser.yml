@@ -27,8 +27,7 @@ changelog:
 release:
   prerelease: auto
 brews:
-  - 
-    name: aws-sso-creds
+  - name: aws-sso-creds
     tap:
       owner: jaxxstorm
       name: homebrew-tap
@@ -37,4 +36,16 @@ brews:
       email: bot@leebriggs.co.uk
     folder: Formula
     homepage: "https://leebriggs.co.uk"
-    description: "Helper utility to get temporary credentials from AWS SSO"
+    description: "Helper utility to get temporary credentials from AWS SSO."
+scoop:
+  url_template: "http://github.com/jaxxstorm/aws-sso-creds/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  bucket:
+    owner: jaxxstorm
+    name: scoop-bucket
+    branch: main
+  commit_author:
+    name: bot
+    email: bot@leebriggs.co.uk
+  commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
+  homepage: "https://leebriggs.co.uk/"
+  description: "Helper utility to get temporary credentials from AWS SSO."
