@@ -2,8 +2,9 @@ package accounts
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"os"
+	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -47,12 +48,17 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error retrieving SSO config: %w", err)
 			}
 
-			cacheFiles, err := ioutil.ReadDir(fmt.Sprintf("%s/.aws/sso/cache", homeDir))
+			cacheFiles, err := os.ReadDir(filepath.Join(homeDir, ".aws", "sso", "cache"))
 			if err != nil {
 				return fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 			}
 
-			token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
+			files := make([]fs.FileInfo, 0, len(cacheFiles))
+
+			token, err := config.GetSSOToken(files, *ssoConfig, homeDir)
+			if err != nil {
+				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
+			}
 
 			sess := session.Must(session.NewSession())
 			svc := sso.New(sess, aws.NewConfig().WithRegion(ssoConfig.Region))
@@ -61,6 +67,9 @@ func Command() *cobra.Command {
 				AccessToken: &token,
 				MaxResults:  &results,
 			})
+			if err != nil {
+				return fmt.Errorf("error listing accounts: %v", err)
+			}
 
 			writer := tabwriter.NewWriter(os.Stdout, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, tabwriterFlags)
 			fmt.Fprintln(writer, "ID\tNAME\tEMAIL ADDRESS")

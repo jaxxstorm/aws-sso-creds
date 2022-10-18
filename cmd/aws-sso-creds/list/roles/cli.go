@@ -2,6 +2,10 @@ package roles
 
 import (
 	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sso"
@@ -9,8 +13,6 @@ import (
 	"github.com/liggitt/tabwriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io/ioutil"
-	"os"
 )
 
 const (
@@ -22,7 +24,7 @@ const (
 )
 
 var (
-	results int64
+	results   int64
 	accountID string
 )
 
@@ -48,12 +50,17 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error retrieving SSO config: %w", err)
 			}
 
-			cacheFiles, err := ioutil.ReadDir(fmt.Sprintf("%s/.aws/sso/cache", homeDir))
+			cacheFiles, err := os.ReadDir(filepath.Join(homeDir, ".aws", "sso", "cache"))
 			if err != nil {
 				return fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 			}
 
-			token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
+			files := make([]fs.FileInfo, 0, len(cacheFiles))
+
+			token, err := config.GetSSOToken(files, *ssoConfig, homeDir)
+			if err != nil {
+				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
+			}
 
 			sess := session.Must(session.NewSession())
 			svc := sso.New(sess, aws.NewConfig().WithRegion(ssoConfig.Region))
@@ -62,9 +69,12 @@ func Command() *cobra.Command {
 
 			roles, err := svc.ListAccountRoles(&sso.ListAccountRolesInput{
 				AccessToken: &token,
-				MaxResults: &results,
-				AccountId: &accountID,
+				MaxResults:  &results,
+				AccountId:   &accountID,
 			})
+			if err != nil {
+				return fmt.Errorf("error listing roles: %v", err)
+			}
 
 			writer := tabwriter.NewWriter(os.Stdout, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, tabwriterFlags)
 			fmt.Fprintln(writer, "ID\tROLE NAME")

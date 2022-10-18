@@ -9,15 +9,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	. "github.com/logrusorgru/aurora"
+	"github.com/logrusorgru/aurora"
 )
-
 
 func Command() *cobra.Command {
 	command := &cobra.Command{
-		Use:   "get",
-		Short: "Get AWS temporary credentials to use on the command line",
-		Long:  "Retrieve AWS temporary credentials",
+		Use:          "get",
+		Short:        "Get AWS temporary credentials to use on the command line",
+		Long:         "Retrieve AWS temporary credentials",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -36,7 +35,7 @@ func Command() *cobra.Command {
 				return err
 			}
 
-			fmt.Println(Sprintf("Your temporary credentials for account %s are:", White(accountID)))
+			fmt.Println(aurora.Sprintf("Your temporary credentials for account %s are:", aurora.White(accountID)))
 			fmt.Println("")
 
 			fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId)
@@ -45,7 +44,7 @@ func Command() *cobra.Command {
 
 			fmt.Println("")
 
-			fmt.Println("These credentials will expire at:", Red(time.UnixMilli(*creds.RoleCredentials.Expiration).UTC()))
+			fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(*creds.RoleCredentials.Expiration).UTC()))
 
 			return nil
 		},

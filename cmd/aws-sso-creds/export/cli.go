@@ -10,9 +10,9 @@ import (
 
 func Command() *cobra.Command {
 	command := &cobra.Command{
-		Use:   "export",
-		Short: "Generates a set of shell commands to export AWS temporary creds to your environment",
-		Long:  "Generates a set of shell commands to export AWS temporary creds to your environment",
+		Use:          "export",
+		Short:        "Generates a set of shell commands to export AWS temporary creds to your environment",
+		Long:         "Generates a set of shell commands to export AWS temporary creds to your environment",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
