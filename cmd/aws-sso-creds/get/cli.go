@@ -44,7 +44,7 @@ func Command() *cobra.Command {
 
 			fmt.Println("")
 
-			fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(*creds.RoleCredentials.Expiration).UTC()))
+			fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(*creds.RoleCredentials.Expiration)))
 
 			return nil
 		},

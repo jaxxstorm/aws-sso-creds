@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -53,9 +52,7 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 			}
 
-			files := make([]fs.FileInfo, 0, len(cacheFiles))
-
-			token, err := config.GetSSOToken(files, *ssoConfig, homeDir)
+			token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
 			if err != nil {
 				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
 			}
