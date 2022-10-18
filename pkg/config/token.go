@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +16,7 @@ func GetSSOToken(files []os.FileInfo, ssoConfig SSOConfig, homedir string) (stri
 		// loop through all the files
 		for _, file := range files {
 			// read the contents into a JSON byte
-			jsonContent, err := ioutil.ReadFile(filepath.Join(homedir, ".aws", "sso", "cache", file.Name()))
+			jsonContent, err := os.ReadFile(filepath.Join(homedir, ".aws", "sso", "cache", file.Name()))
 			if err != nil {
 				return "", fmt.Errorf("error reading aws SSO cache file: %v", err)
 			}

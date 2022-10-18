@@ -2,7 +2,9 @@ package credentials
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io/fs"
+	"os"
+	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -17,12 +19,14 @@ func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsO
 		return nil, "", fmt.Errorf("error retrieving SSO config: %w", err)
 	}
 
-	cacheFiles, err := ioutil.ReadDir(fmt.Sprintf("%s/.aws/sso/cache", homedir))
+	cacheFiles, err := os.ReadDir(filepath.Join(homedir, ".aws", "sso", "cache"))
 	if err != nil {
 		return nil, "", fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 	}
 
-	token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homedir)
+	files := make([]fs.FileInfo, 0, len(cacheFiles))
+
+	token, err := config.GetSSOToken(files, *ssoConfig, homedir)
 	if err != nil {
 		return nil, "", fmt.Errorf("error retrieving SSO token from cache files: %w", err)
 	}
