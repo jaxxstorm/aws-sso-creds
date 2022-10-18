@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"path/filepath"
 
 	"github.com/jaxxstorm/aws-sso-creds/pkg/credentials"
 	"github.com/spf13/cobra"
@@ -23,8 +24,12 @@ func Command() *cobra.Command {
 			cmd.SilenceUsage = true
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
-			credsPath := fmt.Sprintf("%s/.aws/credentials", homeDir)
-			cfgPath := fmt.Sprintf("%s/.aws/config", homeDir)
+			
+			credsPath := filepath.Join(homeDir, ".aws", "credentials")
+			cfgPath := filepath.Join(homeDir, ".aws", "config")
+
+			fmt.Println(credsPath)
+			fmt.Println(cfgPath)
 
 			if profile == "" {
 				return fmt.Errorf("no profile specified")
