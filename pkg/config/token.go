@@ -13,7 +13,6 @@ import (
 // GetSSOToken loops through all the caches files and extracts a valid token to use
 func GetSSOToken(files []fs.DirEntry, ssoConfig SSOConfig, homedir string) (string, error) {
 
-
 	if len(files) > 0 {
 		// loop through all the files
 		for _, file := range files {

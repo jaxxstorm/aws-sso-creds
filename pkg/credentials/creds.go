@@ -18,12 +18,10 @@ func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsO
 		return nil, "", fmt.Errorf("error retrieving SSO config: %w", err)
 	}
 
-
 	cacheFiles, err := os.ReadDir(filepath.Join(homedir, ".aws", "sso", "cache"))
 	if err != nil {
 		return nil, "", fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 	}
-
 
 	token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homedir)
 	if err != nil {
