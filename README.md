@@ -103,6 +103,9 @@ _NOTE:_ currently this tool doesn't support multiple roles when getting credenti
 
 This is a compiled go binary, so just put it in your `$PATH`.
 
+If you're on os x make sure to then run `xattr -d com.apple.quarantine /path/to/aws-sso-creds` to allow it to run.
+
+
 You can also install it from [homebrew](homebrew.sh)
 
 ```bash
