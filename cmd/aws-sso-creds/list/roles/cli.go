@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	results int64
+	results   int64
 	accountID string
 )
 
@@ -54,6 +54,9 @@ func Command() *cobra.Command {
 			}
 
 			token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
+			if err != nil {
+				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
+			}
 
 			sess := session.Must(session.NewSession())
 			svc := sso.New(sess, aws.NewConfig().WithRegion(ssoConfig.Region))
@@ -62,9 +65,12 @@ func Command() *cobra.Command {
 
 			roles, err := svc.ListAccountRoles(&sso.ListAccountRolesInput{
 				AccessToken: &token,
-				MaxResults: &results,
-				AccountId: &accountID,
+				MaxResults:  &results,
+				AccountId:   &accountID,
 			})
+			if err != nil {
+				return fmt.Errorf("error listing roles: %v", err)
+			}
 
 			writer := tabwriter.NewWriter(os.Stdout, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, tabwriterFlags)
 			fmt.Fprintln(writer, "ID\tROLE NAME")

@@ -40,9 +40,15 @@ func configureCLI() *cobra.Command {
 
 	rootCommand.PersistentFlags().StringVarP(&profile, "profile", "p", "", "the AWS profile to use")
 	rootCommand.PersistentFlags().StringVarP(&homeDir, "home-directory", "H", homeDir, "specify a path to a home directory")
-	viper.BindEnv("profile", "AWS_PROFILE")
-	viper.BindPFlag("profile", rootCommand.PersistentFlags().Lookup("profile"))
-	viper.BindPFlag("home-directory", rootCommand.PersistentFlags().Lookup("home-directory"))
+	if err := viper.BindEnv("profile", "AWS_PROFILE"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("profile", rootCommand.PersistentFlags().Lookup("profile")); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("home-directory", rootCommand.PersistentFlags().Lookup("home-directory")); err != nil {
+		panic(err)
+	}
 
 	return rootCommand
 }

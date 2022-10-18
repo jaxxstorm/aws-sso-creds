@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/pulumi/pulumictl/pkg/gitversion"
 	"github.com/jaxxstorm/aws-sso-creds/pkg/version"
+	"github.com/pulumi/pulumictl/pkg/gitversion"
 	"github.com/spf13/cobra"
 )
 

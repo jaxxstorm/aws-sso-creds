@@ -22,15 +22,15 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 
 	// FIXME: make this better
 	if p.HasSection(section) {
-		ssoStartUrl, err := p.Get(section, "sso_start_url")
+		ssoStartURL, err := p.Get(section, "sso_start_url")
 		if err != nil {
 			return nil, fmt.Errorf("no SSO url in profile: %s", profile)
 		}
 		ssoRegion, err := p.Get(section, "sso_region")
 		if err != nil {
-			return nil,  fmt.Errorf("no SSO region in profile: %s", profile)
+			return nil, fmt.Errorf("no SSO region in profile: %s", profile)
 		}
-		ssoAccountId, err := p.Get(section, "sso_account_id")
+		ssoAccountID, err := p.Get(section, "sso_account_id")
 		if err != nil {
 			return nil, fmt.Errorf("no SSO account id in profile: %s", profile)
 		}
@@ -40,13 +40,14 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 		}
 
 		return &SSOConfig{
-			StartUrl:  ssoStartUrl,
+			StartURL:  ssoStartURL,
 			Region:    ssoRegion,
-			AccountID: ssoAccountId,
+			AccountID: ssoAccountID,
 			RoleName:  ssoRoleName,
 		}, nil
 
-	} else {
-		return nil, fmt.Errorf("unable to find profile %s", profile)
 	}
+
+	return nil, fmt.Errorf("unable to find profile %s", profile)
+
 }

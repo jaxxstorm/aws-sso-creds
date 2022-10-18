@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -16,18 +17,20 @@ func GetSSOToken(files []os.FileInfo, ssoConfig SSOConfig, homedir string) (stri
 		// loop through all the files
 		for _, file := range files {
 			// read the contents into a JSON byte
-			jsonContent, err := ioutil.ReadFile(fmt.Sprintf("%s/.aws/sso/cache/%s", homedir, file.Name()))
+			jsonContent, err := ioutil.ReadFile(filepath.Join(homedir, ".aws", "sso", "cache", file.Name()))
 			if err != nil {
-				panic(err)
+				return "", fmt.Errorf("error reading aws SSO cache file: %v", err)
 			}
 
 			// initialize some SSOCacheConfig
 			var cacheData SSOCacheConfig
 
-			json.Unmarshal(jsonContent, &cacheData)
+			if err := json.Unmarshal(jsonContent, &cacheData); err != nil {
+				return "", fmt.Errorf("error marshalling JSON data from cache file: %v", err)
+			}
 
 			// check if the file has a start url, if it doesn't, ignore it
-			if cacheData.StartUrl == ssoConfig.StartUrl {
+			if cacheData.StartURL == ssoConfig.StartURL {
 				// check if the file has an expiry time, if it doesn't ignore it
 				if cacheData.ExpiresAt != "" {
 					t, err := time.Parse(time.RFC3339, strings.Replace(cacheData.ExpiresAt, "UTC", "+00:00", -1))
