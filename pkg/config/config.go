@@ -22,13 +22,30 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 
 	// FIXME: make this better
 	if p.HasSection(section) {
-		ssoStartURL, err := p.Get(section, "sso_start_url")
-		if err != nil {
-			return nil, fmt.Errorf("no SSO url in profile: %s", profile)
-		}
-		ssoRegion, err := p.Get(section, "sso_region")
-		if err != nil {
-			return nil, fmt.Errorf("no SSO region in profile: %s", profile)
+		var ssoStartURL string
+		var ssoRegion string
+
+		ssoSession, err := p.Get(section, "sso_session")
+		if err == nil {
+			ssoSection := fmt.Sprintf("sso-session %s", ssoSession)
+
+			ssoStartURL, err = p.Get(ssoSection, "sso_start_url")
+			if err != nil {
+				return nil, fmt.Errorf("no SSO url in sso-session: %s", ssoSection)
+			}
+			ssoRegion, err = p.Get(ssoSection, "sso_region")
+			if err != nil {
+				return nil, fmt.Errorf("no SSO region in sso-session: %s", ssoSection)
+			}
+		} else {
+			ssoStartURL, err = p.Get(section, "sso_start_url")
+			if err != nil {
+				return nil, fmt.Errorf("no SSO url in profile: %s", profile)
+			}
+			ssoRegion, err = p.Get(section, "sso_region")
+			if err != nil {
+				return nil, fmt.Errorf("no SSO region in profile: %s", profile)
+			}
 		}
 		ssoAccountID, err := p.Get(section, "sso_account_id")
 		if err != nil {
