@@ -18,7 +18,13 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 	}
 
 	// build a section name
-	section := fmt.Sprintf("profile %s", profile)
+	var section string
+	if (profile == "") {
+		section = "default"
+		profile = "<default>"
+	} else {
+		section = fmt.Sprintf("profile %s", profile)
+	}
 
 	// FIXME: make this better
 	if p.HasSection(section) {
@@ -65,6 +71,6 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 
 	}
 
-	return nil, fmt.Errorf("unable to find profile %s", profile)
+	return nil, fmt.Errorf("unable to find profile: %s", profile)
 
 }

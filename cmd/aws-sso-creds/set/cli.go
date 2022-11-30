@@ -35,10 +35,6 @@ func Command() *cobra.Command {
 			fmt.Println(credsPath)
 			fmt.Println(cfgPath)
 
-			if profile == "" {
-				return fmt.Errorf("no profile specified")
-			}
-
 			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
 			if err != nil {
 				return err

@@ -25,10 +25,6 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			if profile == "" {
-				return fmt.Errorf("no profile specified")
-			}
-
 			creds, accountID, err := credentials.GetSSOCredentials(profile, homeDir)
 
 			if err != nil {

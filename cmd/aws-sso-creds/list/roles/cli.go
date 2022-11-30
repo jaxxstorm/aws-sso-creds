@@ -40,10 +40,6 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			if profile == "" {
-				return fmt.Errorf("no profile specified")
-			}
-
 			ssoConfig, err := config.GetSSOConfig(profile, homeDir)
 			if err != nil {
 				return fmt.Errorf("error retrieving SSO config: %w", err)
