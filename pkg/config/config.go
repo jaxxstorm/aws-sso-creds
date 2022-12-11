@@ -19,7 +19,7 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 
 	// build a section name
 	var section string
-	if (profile == "") {
+	if profile == "" {
 		section = "default"
 		profile = "<default>"
 	} else {
