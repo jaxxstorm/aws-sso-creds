@@ -28,7 +28,7 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 
 	// FIXME: make this better
 	if p.HasSection(section) {
-		var startUrl string
+		var startURL string
 		var region string
 		var roleName string
 
@@ -39,7 +39,7 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 		if err == nil {
 			ssoSection := fmt.Sprintf("sso-session %s", ssoSession)
 
-			startUrl, err = p.Get(ssoSection, "sso_start_url")
+			startURL, err = p.Get(ssoSection, "sso_start_url")
 			if err != nil {
 				return nil, fmt.Errorf("no SSO url in sso-session: %s", ssoSection)
 			}
@@ -52,7 +52,7 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 				return nil, fmt.Errorf("no SSO role name in sso-session: %s", ssoSection)
 			}
 		} else {
-			startUrl, err = p.Get(section, "sso_start_url")
+			startURL, err = p.Get(section, "sso_start_url")
 			if err != nil {
 				return nil, fmt.Errorf("no SSO url in profile: %s", profile)
 			}
@@ -72,7 +72,7 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 		}
 
 		return &SSOConfig{
-			StartURL:  startUrl,
+			StartURL:  startURL,
 			Region:    region,
 			AccountID: ssoAccountID,
 			RoleName:  roleName,
