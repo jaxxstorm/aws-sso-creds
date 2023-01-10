@@ -105,10 +105,17 @@ This is a compiled go binary, so just put it in your `$PATH`.
 
 If you're on os x make sure to then run `xattr -d com.apple.quarantine /path/to/aws-sso-creds` to allow it to run.
 
+## Homebrew
 
-You can also install it from [homebrew](homebrew.sh)
+A tap is provided to install via [homebrew](homebrew.sh):
 
 ```bash
 brew tap jaxxstorm/tap
 brew install aws-sso-creds
 ```
+
+## Nix
+
+nixpkgs includes [a recipe](https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/aws-sso-creds/default.nix) for `aws-sso-creds`.
+- If [flakes](https://nixos.wiki/wiki/Flakes) are enabled: `nix profile install nixpkgs#aws-sso-creds`
+- Otherwise: `nix-env --install --attr aws-sso-creds`
