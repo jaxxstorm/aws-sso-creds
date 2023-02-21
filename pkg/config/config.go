@@ -26,60 +26,65 @@ func GetSSOConfig(profile string, homedir string) (*SSOConfig, error) {
 		section = fmt.Sprintf("profile %s", profile)
 	}
 
-	// FIXME: make this better
-	if p.HasSection(section) {
-		var startURL string
-		var region string
-		var roleName string
-
-		// check if we have an sso_session section
-		// if we do, retrieve the vars from that
-		// if not, retrieve it from the profile
-		ssoSession, err := p.Get(section, "sso_session")
-		if err == nil {
-			ssoSection := fmt.Sprintf("sso-session %s", ssoSession)
-
-			startURL, err = p.Get(ssoSection, "sso_start_url")
-			if err != nil {
-				return nil, fmt.Errorf("no SSO url in sso-session: %s", ssoSection)
-			}
-			region, err = p.Get(ssoSection, "sso_region")
-			if err != nil {
-				return nil, fmt.Errorf("no SSO region in sso-session: %s", ssoSection)
-			}
-			roleName, err = p.Get(ssoSection, "sso_role_name")
-			if err != nil {
-				return nil, fmt.Errorf("no SSO role name in sso-session: %s", ssoSection)
-			}
-		} else {
-			startURL, err = p.Get(section, "sso_start_url")
-			if err != nil {
-				return nil, fmt.Errorf("no SSO url in profile: %s", profile)
-			}
-			region, err = p.Get(section, "sso_region")
-			if err != nil {
-				return nil, fmt.Errorf("no SSO region in profile: %s", profile)
-			}
-			roleName, err = p.Get(section, "sso_role_name")
-			if err != nil {
-				return nil, fmt.Errorf("no SSO role name in profile: %s", profile)
-			}
-		}
-		// account id is always going to exist within the profile
-		ssoAccountID, err := p.Get(section, "sso_account_id")
-		if err != nil {
-			return nil, fmt.Errorf("no SSO account id in profile: %s", profile)
-		}
-
-		return &SSOConfig{
-			StartURL:  startURL,
-			Region:    region,
-			AccountID: ssoAccountID,
-			RoleName:  roleName,
-		}, nil
-
+	if !p.HasSection(section) {
+		return nil, fmt.Errorf("unable to find profile: %s", profile)
 	}
 
-	return nil, fmt.Errorf("unable to find profile: %s", profile)
+	c := &SSOConfig{}
 
+	// Check if we have a sso-session section and merge SSO options from the sso-session and profile
+	// SSO options from the profile take precedence over the shared sso-session
+	// Any SSO option can be present in either sso-session or profile
+	ssoSession, err := p.Get(section, "sso_session")
+	if err == nil {
+		ssoSection := fmt.Sprintf("sso-session %s", ssoSession)
+		mergeSSOConfig(p, ssoSection, c)
+
+		// sso-session requires sso_start_url and sso_region
+		if c.Region == "" {
+			return nil, fmt.Errorf("no sso_region in sso-session %q", ssoSession)
+		}
+		if c.StartURL == "" {
+			return nil, fmt.Errorf("no sso_start_url in sso-session %q", ssoSession)
+		}
+	}
+
+	mergeSSOConfig(p, section, c)
+
+	// Validate the required SSO options
+	if c.Region == "" {
+		return nil, fmt.Errorf("no sso_region in profile %q and its sso_session", profile)
+	}
+	if c.StartURL == "" {
+		return nil, fmt.Errorf("no sso_start_url in profile %q and its sso_session", profile)
+	}
+	if c.AccountID == "" {
+		return nil, fmt.Errorf("no sso_account_id in profile %q or its sso_session", profile)
+	}
+	if c.RoleName == "" {
+		return nil, fmt.Errorf("no sso_role_name in profile %q or its sso_session", profile)
+	}
+
+	return c, nil
+}
+
+// mergeSSOConfig merges non-empty SSO options from the specified section (sso-session or profile) into the SSOConfig struct s overwriting the existing values
+//
+// TODO: Should be removed in favor of github.com/aws/aws-sdk-go-v2/config and github.com/aws/aws-sdk-go-v2/credentials
+func mergeSSOConfig(p *configparser.ConfigParser, section string, s *SSOConfig) {
+	if accountID, err := p.Get(section, "sso_account_id"); err == nil && accountID != "" {
+		s.AccountID = accountID
+	}
+
+	if startURL, err := p.Get(section, "sso_start_url"); err == nil && startURL != "" {
+		s.StartURL = startURL
+	}
+
+	if region, err := p.Get(section, "sso_region"); err == nil && region != "" {
+		s.Region = region
+	}
+
+	if roleName, err := p.Get(section, "sso_role_name"); err == nil && roleName != "" {
+		s.RoleName = roleName
+	}
 }
