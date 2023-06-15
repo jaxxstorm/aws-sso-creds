@@ -60,21 +60,20 @@ func Command() *cobra.Command {
 			}
 
 			// create a new credentials section
-			if err := credsFile.AddSection(args[0]); err != nil {
-				return fmt.Errorf("error creating credentials section in creds file: %v", err)
+			section := args[0]
+			if !credsFile.HasSection(section) {
+				if err := credsFile.AddSection(section); err != nil {
+					return fmt.Errorf("error creating credentials section in creds file: %v", err)
+				}
 			}
 
-			if err := configFile.AddSection(fmt.Sprintf("profile %s", args[0])); err != nil {
-				return fmt.Errorf("error creating credentials section in config file: %v", err)
-			}
-
-			if err := credsFile.Set(args[0], "aws_access_key_id", *creds.RoleCredentials.AccessKeyId); err != nil {
+			if err := credsFile.Set(section, "aws_access_key_id", *creds.RoleCredentials.AccessKeyId); err != nil {
 				return fmt.Errorf("error setting access key id: %v", err)
 			}
-			if err := credsFile.Set(args[0], "aws_secret_access_key", *creds.RoleCredentials.SecretAccessKey); err != nil {
+			if err := credsFile.Set(section, "aws_secret_access_key", *creds.RoleCredentials.SecretAccessKey); err != nil {
 				return fmt.Errorf("error setting secret access key: %v", err)
 			}
-			if err := credsFile.Set(args[0], "aws_session_token", *creds.RoleCredentials.SessionToken); err != nil {
+			if err := credsFile.Set(section, "aws_session_token", *creds.RoleCredentials.SessionToken); err != nil {
 				return fmt.Errorf("error setting session token: %v", err)
 			}
 
@@ -82,11 +81,17 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error saving credentials file: %v", err)
 			}
 
+			if !configFile.HasSection(section) {
+				if err := configFile.AddSection(section); err != nil {
+					return fmt.Errorf("error creating credentials section in config file: %v", err)
+				}
+			}
+
 			if err := configFile.SaveWithDelimiter(cfgPath, "="); err != nil {
 				return fmt.Errorf("error saving config file: %v", err)
 			}
 
-			fmt.Printf("credentials saved to profile: %s\n", args[0])
+			fmt.Printf("credentials saved to profile: %s\n", section)
 			fmt.Printf("these credentials will expire:  %s\n", time.Unix(*creds.RoleCredentials.Expiration, 0).Format(time.UnixDate))
 
 			return nil
