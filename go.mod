@@ -1,4 +1,4 @@
-module github.com/jaxxstorm/aws-sso-creds
+module github.com/thuannfq/aws-sso-creds
 
 go 1.19
 

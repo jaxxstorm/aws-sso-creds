@@ -1,9 +1,9 @@
 package list
 
 import (
-	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/list/accounts"
-	"github.com/jaxxstorm/aws-sso-creds/cmd/aws-sso-creds/list/roles"
 	"github.com/spf13/cobra"
+	"github.com/thuannfq/aws-sso-creds/cmd/aws-sso-creds/list/accounts"
+	"github.com/thuannfq/aws-sso-creds/cmd/aws-sso-creds/list/roles"
 )
 
 func Command() *cobra.Command {

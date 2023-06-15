@@ -56,7 +56,7 @@ AWS_ACCESS_KEY_ID	 <KEY>
 AWS_SECRET_ACCESS_KEY <ACCESS_KEY>
 AWS_SESSION_TOKEN	<A_LONG_SESSION_TOKEN>
 
-These credentials will expire at: Mon Oct 31 16:03:20 PST 52495 
+These credentials will expire at: Mon Oct 31 16:03:20 PST 52495
 ```
 
 `aws-sso-creds` will automatically use the `AWS_PROFILE` environment variable you have set. You can also specify a profile with `aws-sso-creds --profile`

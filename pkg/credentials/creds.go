@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sso"
-	"github.com/jaxxstorm/aws-sso-creds/pkg/config"
+	"github.com/thuannfq/aws-sso-creds/pkg/config"
 )
 
 func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsOutput, string, error) {
