@@ -81,8 +81,9 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error saving credentials file: %v", err)
 			}
 
-			if !configFile.HasSection(section) {
-				if err := configFile.AddSection(section); err != nil {
+			configSection := "profile " + section
+			if !configFile.HasSection(configSection) {
+				if err := configFile.AddSection(configSection); err != nil {
 					return fmt.Errorf("error creating credentials section in config file: %v", err)
 				}
 			}
