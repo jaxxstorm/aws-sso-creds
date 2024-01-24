@@ -1,6 +1,7 @@
 package get
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -11,6 +12,13 @@ import (
 
 	"github.com/logrusorgru/aurora"
 )
+
+type JSON struct {
+	AwsAccessKeyId     string    `json:"aws_access_key_id"`
+	AwsSecretAccessKey string    `json:"aws_secret_access_key"`
+	SessionToken       string    `json:"aws_session_token"`
+	ExpireAt           time.Time `json:"expire_at"`
+}
 
 func Command() *cobra.Command {
 	command := &cobra.Command{
@@ -24,6 +32,7 @@ func Command() *cobra.Command {
 
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
+			exportJson, _ := cmd.Flags().GetBool("json")
 
 			creds, accountID, err := credentials.GetSSOCredentials(profile, homeDir)
 
@@ -31,20 +40,35 @@ func Command() *cobra.Command {
 				return err
 			}
 
-			fmt.Println(aurora.Sprintf("Your temporary credentials for account %s are:", aurora.White(accountID)))
-			fmt.Println("")
+			if exportJson {
+				credJSON := JSON{
+					AwsAccessKeyId:     *creds.RoleCredentials.AccessKeyId,
+					AwsSecretAccessKey: *creds.RoleCredentials.SecretAccessKey,
+					SessionToken:       *creds.RoleCredentials.SessionToken,
+					ExpireAt:           time.UnixMilli(*creds.RoleCredentials.Expiration),
+				}
+				output, err := json.Marshal(credJSON)
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(output))
+			} else {
 
-			fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId)
-			fmt.Fprintln(os.Stdout, "AWS_SECRET_ACCESS_KEY\t", *creds.RoleCredentials.SecretAccessKey)
-			fmt.Fprintln(os.Stdout, "AWS_SESSION_TOKEN\t", *creds.RoleCredentials.SessionToken)
+				fmt.Println(aurora.Sprintf("Your temporary credentials for account %s are:", aurora.White(accountID)))
+				fmt.Println("")
 
-			fmt.Println("")
+				fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId)
+				fmt.Fprintln(os.Stdout, "AWS_SECRET_ACCESS_KEY\t", *creds.RoleCredentials.SecretAccessKey)
+				fmt.Fprintln(os.Stdout, "AWS_SESSION_TOKEN\t", *creds.RoleCredentials.SessionToken)
 
-			fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(*creds.RoleCredentials.Expiration)))
+				fmt.Println("")
+
+				fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(*creds.RoleCredentials.Expiration)))
+			}
 
 			return nil
 		},
 	}
-
+	command.PersistentFlags().BoolP("json", "j", false, "print output in json format")
 	return command
 }
