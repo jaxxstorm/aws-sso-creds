@@ -16,7 +16,7 @@ jobs:
         with:
           go-version: '1.17.x'
       - name: Goreleaser publish
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           version: v1.12.1
           args: release --rm-dist
