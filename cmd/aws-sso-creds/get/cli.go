@@ -14,7 +14,7 @@ import (
 )
 
 type JSON struct {
-	AwsAccessKeyId     string    `json:"aws_access_key_id"`
+	AwsAccessKeyID     string    `json:"aws_access_key_id"`
 	AwsSecretAccessKey string    `json:"aws_secret_access_key"`
 	SessionToken       string    `json:"aws_session_token"`
 	ExpireAt           time.Time `json:"expire_at"`
@@ -32,7 +32,7 @@ func Command() *cobra.Command {
 
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
-			exportJson, _ := cmd.Flags().GetBool("json")
+			exportJSON, _ := cmd.Flags().GetBool("json")
 
 			creds, accountID, err := credentials.GetSSOCredentials(profile, homeDir)
 
@@ -40,9 +40,9 @@ func Command() *cobra.Command {
 				return err
 			}
 
-			if exportJson {
+			if exportJSON {
 				credJSON := JSON{
-					AwsAccessKeyId:     *creds.RoleCredentials.AccessKeyId,
+					AwsAccessKeyID:     *creds.RoleCredentials.AccessKeyId,
 					AwsSecretAccessKey: *creds.RoleCredentials.SecretAccessKey,
 					SessionToken:       *creds.RoleCredentials.SessionToken,
 					ExpireAt:           time.UnixMilli(*creds.RoleCredentials.Expiration),
