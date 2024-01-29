@@ -18,8 +18,8 @@ jobs:
       - name: Goreleaser publish
         uses: goreleaser/goreleaser-action@v5
         with:
+          args: release --clean
           version: latest
-          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
 
