@@ -41,7 +41,7 @@ func Command() *cobra.Command {
 				AccessKeyID:     *creds.RoleCredentials.AccessKeyId,
 				SecretAccessKey: *creds.RoleCredentials.SecretAccessKey,
 				SessionToken:    *creds.RoleCredentials.SessionToken,
-				Expiration:      time.Unix(*creds.RoleCredentials.Expiration/1000, 0).Format(time.RFC3339),
+				Expiration:      time.Unix(creds.RoleCredentials.Expiration/1000, 0).Format(time.RFC3339),
 			}
 
 			output, err := json.Marshal(rawCreds)
