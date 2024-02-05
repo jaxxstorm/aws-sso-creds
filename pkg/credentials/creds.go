@@ -1,19 +1,19 @@
 package credentials
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sso"
-	"github.com/jaxxstorm/aws-sso-creds/pkg/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sso"
+	cfg "github.com/jaxxstorm/aws-sso-creds/pkg/config"
 )
 
 func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsOutput, string, error) {
-
-	ssoConfig, err := config.GetSSOConfig(profile, homedir)
+	ssoConfig, err := cfg.GetSSOConfig(profile, homedir)
 	if err != nil {
 		return nil, "", fmt.Errorf("error retrieving SSO config: %w", err)
 	}
@@ -23,24 +23,29 @@ func GetSSOCredentials(profile string, homedir string) (*sso.GetRoleCredentialsO
 		return nil, "", fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 	}
 
-	token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homedir)
+	token, err := cfg.GetSSOToken(cacheFiles, *ssoConfig, homedir)
 	if err != nil {
 		return nil, "", fmt.Errorf("error retrieving SSO token from cache files: %w", err)
 	}
 
-	sess := session.Must(session.NewSession())
-	svc := sso.New(sess, aws.NewConfig().WithRegion(ssoConfig.Region))
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(ssoConfig.Region),
+		config.WithSharedConfigProfile(profile),
+	)
+	if err != nil {
+		return nil, "", fmt.Errorf("error loading AWS configuration: %w", err)
+	}
 
-	creds, err := svc.GetRoleCredentials(&sso.GetRoleCredentialsInput{
-		AccessToken: &token,
-		AccountId:   &ssoConfig.AccountID,
-		RoleName:    &ssoConfig.RoleName,
+	svc := sso.NewFromConfig(cfg)
+
+	creds, err := svc.GetRoleCredentials(context.TODO(), &sso.GetRoleCredentialsInput{
+		AccessToken: aws.String(token),
+		AccountId:   aws.String(ssoConfig.AccountID),
+		RoleName:    aws.String(ssoConfig.RoleName),
 	})
-
 	if err != nil {
 		return nil, "", fmt.Errorf("error retrieving credentials from AWS: %w", err)
 	}
 
 	return creds, ssoConfig.AccountID, nil
-
 }

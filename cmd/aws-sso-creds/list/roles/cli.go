@@ -1,15 +1,15 @@
 package roles
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
+	"text/tabwriter"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sso"
-	"github.com/jaxxstorm/aws-sso-creds/pkg/config"
-	"github.com/liggitt/tabwriter"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sso"
+	cfg "github.com/jaxxstorm/aws-sso-creds/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -19,11 +19,10 @@ const (
 	tabwriterWidth    = 4
 	tabwriterPadding  = 3
 	tabwriterPadChar  = ' '
-	tabwriterFlags    = tabwriter.RememberWidths
 )
 
 var (
-	results   int64
+	results   int32 // Adjusted to int32 as per v2 requirements
 	accountID string
 )
 
@@ -40,7 +39,7 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			ssoConfig, err := config.GetSSOConfig(profile, homeDir)
+			ssoConfig, err := cfg.GetSSOConfig(profile, homeDir)
 			if err != nil {
 				return fmt.Errorf("error retrieving SSO config: %w", err)
 			}
@@ -50,30 +49,37 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
 			}
 
-			token, err := config.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
+			token, err := cfg.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
 			if err != nil {
 				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
 			}
 
-			sess := session.Must(session.NewSession())
-			svc := sso.New(sess, aws.NewConfig().WithRegion(ssoConfig.Region))
+			cfg, err := config.LoadDefaultConfig(context.TODO(),
+				config.WithRegion(ssoConfig.Region),
+				config.WithSharedConfigProfile(profile),
+			)
+			if err != nil {
+				return fmt.Errorf("error loading AWS config: %v", err)
+			}
+
+			svc := sso.NewFromConfig(cfg)
 
 			accountID = args[0]
 
-			roles, err := svc.ListAccountRoles(&sso.ListAccountRolesInput{
+			roles, err := svc.ListAccountRoles(context.TODO(), &sso.ListAccountRolesInput{
 				AccessToken: &token,
-				MaxResults:  &results,
+				MaxResults:  &results, // Note: MaxResults might need type adjustment
 				AccountId:   &accountID,
 			})
 			if err != nil {
 				return fmt.Errorf("error listing roles: %v", err)
 			}
 
-			writer := tabwriter.NewWriter(os.Stdout, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, tabwriterFlags)
-			fmt.Fprintln(writer, "ID\tROLE NAME")
+			writer := tabwriter.NewWriter(os.Stdout, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, 0)
+			fmt.Fprintln(writer, "ROLE NAME")
 
-			for _, results := range roles.RoleList {
-				fmt.Fprintf(writer, "%s\t%s\n", *results.AccountId, *results.RoleName)
+			for _, role := range roles.RoleList {
+				fmt.Fprintf(writer, "%s\t%s\n", *role.RoleName, *role.RoleName)
 			}
 
 			writer.Flush()
@@ -82,7 +88,7 @@ func Command() *cobra.Command {
 		},
 	}
 
-	command.Flags().Int64VarP(&results, "results", "r", 10, "Maximum number of accounts to return")
+	command.Flags().Int32VarP(&results, "results", "r", 10, "Maximum number of roles to return") // Adjusted to Int32VarP
 
 	return command
 }

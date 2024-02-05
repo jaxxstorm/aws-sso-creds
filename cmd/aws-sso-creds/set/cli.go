@@ -87,7 +87,7 @@ func Command() *cobra.Command {
 			}
 
 			fmt.Printf("credentials saved to profile: %s\n", args[0])
-			fmt.Printf("these credentials will expire:  %s\n", time.Unix(*creds.RoleCredentials.Expiration, 0).Format(time.UnixDate))
+			fmt.Printf("these credentials will expire:  %s\n", time.Unix(creds.RoleCredentials.Expiration, 0).Format(time.UnixDate))
 
 			return nil
 		},

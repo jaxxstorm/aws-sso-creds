@@ -45,7 +45,7 @@ func Command() *cobra.Command {
 					AwsAccessKeyID:     *creds.RoleCredentials.AccessKeyId,
 					AwsSecretAccessKey: *creds.RoleCredentials.SecretAccessKey,
 					SessionToken:       *creds.RoleCredentials.SessionToken,
-					ExpireAt:           time.UnixMilli(*creds.RoleCredentials.Expiration),
+					ExpireAt:           time.UnixMilli(creds.RoleCredentials.Expiration),
 				}
 				output, err := json.Marshal(credJSON)
 				if err != nil {
@@ -63,7 +63,7 @@ func Command() *cobra.Command {
 
 				fmt.Println("")
 
-				fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(*creds.RoleCredentials.Expiration)))
+				fmt.Println("These credentials will expire at:", aurora.Red(time.UnixMilli(creds.RoleCredentials.Expiration)))
 			}
 
 			return nil
