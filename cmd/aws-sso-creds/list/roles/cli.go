@@ -79,7 +79,7 @@ func Command() *cobra.Command {
 			fmt.Fprintln(writer, "ROLE NAME")
 
 			for _, role := range roles.RoleList {
-				fmt.Fprintf(writer, "%s\t%s\n", *role.RoleName, *role.RoleName)
+				fmt.Fprintf(writer, "%s\n", *role.RoleName)
 			}
 
 			writer.Flush()
