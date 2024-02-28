@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.24.1
 	github.com/aws/aws-sdk-go-v2/config v1.26.6
 	github.com/aws/aws-sdk-go-v2/service/sso v1.18.7
-	github.com/bigkevmcd/go-configparser v0.0.0-20230427073640-c6b631f70126
+	github.com/bigkevmcd/go-configparser v1.3
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de
 	github.com/logrusorgru/aurora v2.0.3+incompatible
