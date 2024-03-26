@@ -78,6 +78,23 @@ export AWS_SECRET_ACCESS_KEY=<SECRET_KEY>
 export AWS_SESSION_TOKEN=<SESSION_TOKEN>
 ```
 
+#### PowerShell more your thing?
+
+If you're using PowerShell, you can use `export-ps` to generate PowerShell assignments, instead.
+
+```powershell
+> aws-sso-creds export-ps
+$env:AWS_ACCESS_KEY_ID='<KEY>'
+$env:AWS_SECRET_ACCESS_KEY='<SECRET_KEY>'
+$env:AWS_SESSION_TOKEN='<SESSION_TOKEN>'
+```
+
+Use it with `Invoke-Expression` :-
+
+```powershell
+> aws-sso-creds export-ps | Invoke-Expression
+```
+
 ## List accounts
 
 You can also list the accounts you have available within AWS SSO:
