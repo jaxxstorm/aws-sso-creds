@@ -27,9 +27,9 @@ func Command() *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("$env:AWS_ACCESS_KEY_ID=%s\n", *creds.RoleCredentials.AccessKeyId)
-			fmt.Printf("$env:AWS_SECRET_ACCESS_KEY=%s\n", *creds.RoleCredentials.SecretAccessKey)
-			fmt.Printf("$env:AWS_SESSION_TOKEN=%s\n", *creds.RoleCredentials.SessionToken)
+			fmt.Printf("$env:AWS_ACCESS_KEY_ID='%s'\n", *creds.RoleCredentials.AccessKeyId)
+			fmt.Printf("$env:AWS_SECRET_ACCESS_KEY='%s'\n", *creds.RoleCredentials.SecretAccessKey)
+			fmt.Printf("$env:AWS_SESSION_TOKEN='%s'\n", *creds.RoleCredentials.SessionToken)
 
 			return nil
 		},
