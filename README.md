@@ -84,12 +84,12 @@ If you're using PowerShell, you can use `export-ps` to generate PowerShell assig
 
 ```powershell
 > aws-sso-creds export-ps
-$env:AWS_ACCESS_KEY_ID=<KEY>
-$env:AWS_SECRET_ACCESS_KEY=<SECRET_KEY>
-$env:AWS_SESSION_TOKEN=<SESSION_TOKEN>
+$env:AWS_ACCESS_KEY_ID='<KEY>'
+$env:AWS_SECRET_ACCESS_KEY='<SECRET_KEY>'
+$env:AWS_SESSION_TOKEN='<SESSION_TOKEN>'
 ```
 
-Used with `Invoke-Expression` :-
+Use it with `Invoke-Expression` :-
 
 ```powershell
 > aws-sso-creds export-ps | Invoke-Expression
