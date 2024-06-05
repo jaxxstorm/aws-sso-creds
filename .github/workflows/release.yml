@@ -16,7 +16,7 @@ jobs:
         with:
           go-version: '1.21.x'
       - name: Goreleaser publish
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           args: release --clean
           version: latest
