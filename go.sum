@@ -50,6 +50,8 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/bigkevmcd/go-configparser v0.0.0-20230427073640-c6b631f70126 h1:uru++pUKoS/yYU3Ohq9VItZdK/cT7FFJH/UUjOlxc+s=
 github.com/bigkevmcd/go-configparser v0.0.0-20230427073640-c6b631f70126/go.mod h1:zqqfbfnDeSdRs1WihmMjSbhb2Ptw8Jbus831xoqiIec=
+github.com/bigkevmcd/go-configparser v0.0.0-20240808124832-fc81059ea0bd h1:MsTk4yo6KVYdulsDscuH4AwiZN1CyuCJAg59EWE7HPQ=
+github.com/bigkevmcd/go-configparser v0.0.0-20240808124832-fc81059ea0bd/go.mod h1:vzEQfW+A1T+AMJmTIX+SXNLNECHOM7GEinHhw0IjykI=
 github.com/blang/semver v1.1.1-0.20190414182527-1a9109f8c4a1 h1:Quy+QGP2Ia3Gv4c33NAFS/K9erlqriDt8KD9ZFuyfCo=
 github.com/blang/semver v1.1.1-0.20190414182527-1a9109f8c4a1/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnwebNt5EWlYSAyrTnjyyk=
 github.com/bwesterb/go-ristretto v1.2.3/go.mod h1:fUIoIZaG73pV5biE2Blr2xEzDoMj7NFEuV9ekS419A0=
