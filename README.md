@@ -122,6 +122,27 @@ This is a compiled go binary, so just put it in your `$PATH`.
 
 If you're on os x make sure to then run `xattr -d com.apple.quarantine /path/to/aws-sso-creds` to allow it to run.
 
+## Ubuntu/Linux
+
+For Ubuntu and other Linux distributions, download the latest release from GitHub:
+
+```bash
+# Download the latest release (replace v2.0.0 with the latest version)
+wget https://github.com/jaxxstorm/aws-sso-creds/releases/download/v2.0.0/aws-sso-creds-v2.0.0-linux-amd64.tar.gz
+
+# Extract the tarball
+tar -xzf aws-sso-creds-v2.0.0-linux-amd64.tar.gz
+
+# Move the binary to your PATH
+sudo mv aws-sso-creds /usr/local/bin/
+
+# Make it executable
+sudo chmod +x /usr/local/bin/aws-sso-creds
+
+# Verify installation
+aws-sso-creds --help
+```
+
 ## Homebrew
 
 A tap is provided to install via [homebrew](homebrew.sh):
