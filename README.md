@@ -95,6 +95,22 @@ Use it with `Invoke-Expression` :-
 > aws-sso-creds export-ps | Invoke-Expression
 ```
 
+## Execute a command with credentials
+
+If you want to run a command with AWS credentials injected into its environment without modifying your current shell, use `aws-sso-creds exec`:
+
+```bash
+aws-sso-creds -p my-profile exec -- aws s3 ls
+```
+
+Or using the `AWS_PROFILE` environment variable:
+
+```bash
+AWS_PROFILE=my-profile aws-sso-creds exec -- aws s3 ls
+```
+
+This runs the given command with `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` set in its environment.
+
 ## List accounts
 
 You can also list the accounts you have available within AWS SSO:
