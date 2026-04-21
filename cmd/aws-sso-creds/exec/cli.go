@@ -24,7 +24,7 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, _, cfg, err := credentials.GetSSOCredentials(profile, homeDir)
 			if err != nil {
 				return err
 			}
@@ -39,6 +39,7 @@ func Command() *cobra.Command {
 				fmt.Sprintf("AWS_ACCESS_KEY_ID=%s", *creds.RoleCredentials.AccessKeyId),
 				fmt.Sprintf("AWS_SECRET_ACCESS_KEY=%s", *creds.RoleCredentials.SecretAccessKey),
 				fmt.Sprintf("AWS_SESSION_TOKEN=%s", *creds.RoleCredentials.SessionToken),
+				fmt.Sprintf("AWS_DEFAULT_REGION=%s", cfg.Region),
 			)
 
 			return syscall.Exec(binary, args, env)

@@ -3,10 +3,11 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/jaxxstorm/aws-sso-creds/pkg/credentials"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"time"
 )
 
 type CredentialsProcessOutput struct {
@@ -30,7 +31,7 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, _, _, err := credentials.GetSSOCredentials(profile, homeDir)
 
 			if err != nil {
 				return err

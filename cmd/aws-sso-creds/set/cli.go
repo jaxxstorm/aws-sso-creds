@@ -35,7 +35,7 @@ func Command() *cobra.Command {
 			fmt.Println(credsPath)
 			fmt.Println(cfgPath)
 
-			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, _, _, err := credentials.GetSSOCredentials(profile, homeDir)
 			if err != nil {
 				return err
 			}
