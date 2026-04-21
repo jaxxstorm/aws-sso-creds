@@ -21,7 +21,7 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			creds, _, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, _, _, err := credentials.GetSSOCredentials(profile, homeDir)
 
 			if err != nil {
 				return err

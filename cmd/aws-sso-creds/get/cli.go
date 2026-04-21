@@ -34,7 +34,7 @@ func Command() *cobra.Command {
 			homeDir := viper.GetString("home-directory")
 			exportJSON, _ := cmd.Flags().GetBool("json")
 
-			creds, accountID, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, ssoConfig, _, err := credentials.GetSSOCredentials(profile, homeDir)
 
 			if err != nil {
 				return err
@@ -54,7 +54,7 @@ func Command() *cobra.Command {
 				fmt.Println(string(output))
 			} else {
 
-				fmt.Println(aurora.Sprintf("Your temporary credentials for account %s are:", aurora.White(accountID)))
+				fmt.Println(aurora.Sprintf("Your temporary credentials for account %s are:", aurora.White(ssoConfig.AccountID)))
 				fmt.Println("")
 
 				fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId)
