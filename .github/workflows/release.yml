@@ -14,7 +14,7 @@ jobs:
       - name: Install Go 1.21
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21.x'
+          go-version: '1.26.x'
       - name: Goreleaser publish
         uses: goreleaser/goreleaser-action@v5
         with:
