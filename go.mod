@@ -3,7 +3,7 @@ module github.com/jaxxstorm/aws-sso-creds
 go 1.25.0
 
 require (
-	github.com/aws/aws-sdk-go v1.50.36
+	github.com/aws/aws-sdk-go v1.55.8
 	github.com/aws/aws-sdk-go-v2 v1.41.9
 	github.com/aws/aws-sdk-go-v2/config v1.32.20
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.19
