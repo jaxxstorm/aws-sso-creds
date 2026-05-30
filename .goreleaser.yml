@@ -1,3 +1,5 @@
+version: 2
+
 before:
   hooks:
     - go mod download
@@ -19,33 +21,36 @@ archives:
 - name_template: "{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
   format_overrides:
     - goos: windows
-      format: zip
+      formats:
+        - zip
 snapshot:
-  name_template: "{{ .Tag }}-SNAPSHOT"
+  version_template: "{{ .Tag }}-SNAPSHOT"
 changelog:
-  skip: true
+  disable: true
 release:
   prerelease: auto
-brews:
+homebrew_casks:
   - name: aws-sso-creds
-    tap:
+    repository:
       owner: jaxxstorm
       name: homebrew-tap
     commit_author:
       name: GitHub Actions
       email: bot@leebriggs.co.uk
-    folder: Formula
+    directory: Casks
     homepage: "https://leebriggs.co.uk"
     description: "Helper utility to get temporary credentials from AWS SSO."
-scoop:
-  url_template: "http://github.com/jaxxstorm/aws-sso-creds/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-  bucket:
-    owner: jaxxstorm
-    name: scoop-bucket
-    branch: main
-  commit_author:
-    name: bot
-    email: bot@leebriggs.co.uk
-  commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
-  homepage: "https://leebriggs.co.uk/"
-  description: "Helper utility to get temporary credentials from AWS SSO."
+    binaries:
+      - aws-sso-creds
+scoops:
+  - url_template: "http://github.com/jaxxstorm/aws-sso-creds/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    repository:
+      owner: jaxxstorm
+      name: scoop-bucket
+      branch: main
+    commit_author:
+      name: bot
+      email: bot@leebriggs.co.uk
+    commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
+    homepage: "https://leebriggs.co.uk/"
+    description: "Helper utility to get temporary credentials from AWS SSO."

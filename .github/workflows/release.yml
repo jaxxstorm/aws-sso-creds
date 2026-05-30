@@ -19,7 +19,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v7
         with:
           args: release --clean
-          version: latest
+          version: "~> v2"
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
-
