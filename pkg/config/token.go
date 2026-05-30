@@ -31,6 +31,9 @@ func GetSSOToken(ssoConfig SSOConfig, homedir string) (string, error) {
 	if err == nil {
 		return token, nil
 	}
+	if !errors.Is(err, errInvalidSSOCache) {
+		return "", err
+	}
 
 	files, err := os.ReadDir(cacheDir)
 	if err != nil {

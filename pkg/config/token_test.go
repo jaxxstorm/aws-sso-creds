@@ -79,6 +79,17 @@ func TestGetSSOTokenReturnsMalformedSelectedJSONError(t *testing.T) {
 	}
 }
 
+func TestGetSSOTokenReturnsMalformedSelectedJSONErrorBeforeFallback(t *testing.T) {
+	home := testutil.AWSHome(t)
+	testutil.WriteSSOCache(t, home, "0-valid-fallback.json", validCacheJSON(testStartURL, "fallback-token", "2999-01-02T03:04:05Z"))
+	writeDeterministicCache(t, home, testStartURL, `{not-json`)
+
+	_, err := GetSSOToken(SSOConfig{StartURL: testStartURL}, home)
+	if err == nil || !strings.Contains(err.Error(), "error marshalling JSON data from cache file") {
+		t.Fatalf("expected malformed JSON error, got %v", err)
+	}
+}
+
 func TestGetSSOTokenRejectsSelectedStartURLMismatch(t *testing.T) {
 	home := testutil.AWSHome(t)
 	writeDeterministicCache(t, home, testStartURL, validCacheJSON("https://other.awsapps.com/start", "wrong-token", "2999-01-02T03:04:05Z"))
