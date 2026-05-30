@@ -65,7 +65,7 @@ func getSSOTokenFromCacheFile(path string, ssoConfig SSOConfig) (string, error) 
 		return "", errInvalidSSOCache
 	}
 
-	t, err := time.Parse(time.RFC3339, strings.Replace(cacheData.ExpiresAt, "UTC", "+00:00", -1))
+	t, err := time.Parse(time.RFC3339, strings.ReplaceAll(cacheData.ExpiresAt, "UTC", "+00:00"))
 	if err != nil {
 		return "", errInvalidSSOCache
 	}

@@ -45,8 +45,11 @@ func Command() *cobra.Command {
 			if err != nil {
 				if os.IsNotExist(err) {
 					// Ensure the new empty credentials file is not readable by others.
-					if f, err := os.OpenFile(credsPath, os.O_CREATE, 0600); err != nil {
-						f.Close()
+					f, err := os.OpenFile(credsPath, os.O_CREATE, 0600)
+					if err != nil {
+						return err
+					}
+					if err := f.Close(); err != nil {
 						return err
 					}
 

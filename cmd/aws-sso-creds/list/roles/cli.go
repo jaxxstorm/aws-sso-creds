@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sso"
 	cfg "github.com/jaxxstorm/aws-sso-creds/pkg/config"
+	"github.com/jaxxstorm/aws-sso-creds/pkg/contract"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -82,13 +83,15 @@ func Command() *cobra.Command {
 			}
 
 			writer := tabwriter.NewWriter(os.Stdout, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, 0)
-			fmt.Fprintln(writer, "ROLE NAME")
+			contract.IgnoreIoError(fmt.Fprintln(writer, "ROLE NAME"))
 
 			for _, role := range roles.RoleList {
-				fmt.Fprintf(writer, "%s\n", *role.RoleName)
+				contract.IgnoreIoError(fmt.Fprintf(writer, "%s\n", *role.RoleName))
 			}
 
-			writer.Flush()
+			if err := writer.Flush(); err != nil {
+				return err
+			}
 
 			return nil
 		},
