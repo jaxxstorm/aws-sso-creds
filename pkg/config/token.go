@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
@@ -10,11 +11,17 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ssooidc"
 )
 
 const noValidCacheFilesError = "no valid cache files found, you might need to run aws sso login"
 
-var errInvalidSSOCache = errors.New(noValidCacheFilesError)
+var (
+	errInvalidSSOCache    = errors.New(noValidCacheFilesError)
+	refreshSSOAccessToken = refreshSSOAccessTokenWithOIDC
+)
 
 // SSOCacheFileName returns the AWS SSO cache file name for a start URL.
 func SSOCacheFileName(startURL string) string {
@@ -73,8 +80,33 @@ func getSSOTokenFromCacheFile(path string, ssoConfig SSOConfig) (string, error) 
 		return "", errInvalidSSOCache
 	}
 	if t.Unix() <= time.Now().Unix() {
-		return "", errInvalidSSOCache
+		if !cacheData.canRefresh() {
+			return "", errInvalidSSOCache
+		}
+		return refreshSSOAccessToken(cacheData)
 	}
 
 	return cacheData.AccessToken, nil
+}
+
+func (c SSOCacheConfig) canRefresh() bool {
+	return c.Region != "" && c.ClientID != "" && c.ClientSecret != "" && c.RefreshToken != ""
+}
+
+func refreshSSOAccessTokenWithOIDC(cacheData SSOCacheConfig) (string, error) {
+	client := ssooidc.New(ssooidc.Options{Region: cacheData.Region})
+	token, err := client.CreateToken(context.TODO(), &ssooidc.CreateTokenInput{
+		ClientId:     aws.String(cacheData.ClientID),
+		ClientSecret: aws.String(cacheData.ClientSecret),
+		GrantType:    aws.String("refresh_token"),
+		RefreshToken: aws.String(cacheData.RefreshToken),
+	})
+	if err != nil {
+		return "", fmt.Errorf("error refreshing SSO access token: %w", err)
+	}
+	if token.AccessToken == nil || *token.AccessToken == "" {
+		return "", errInvalidSSOCache
+	}
+
+	return *token.AccessToken, nil
 }

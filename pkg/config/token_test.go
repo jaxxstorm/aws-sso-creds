@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -106,6 +107,52 @@ func TestGetSSOTokenRejectsExpiredSelectedToken(t *testing.T) {
 	assertNoValidCacheFilesError(t, err)
 }
 
+func TestGetSSOTokenRefreshesExpiredSelectedToken(t *testing.T) {
+	home := testutil.AWSHome(t)
+	writeDeterministicCache(t, home, testStartURL, refreshableCacheJSON(testStartURL, "expired-token", "2000-01-02T03:04:05Z"))
+
+	originalRefreshSSOAccessToken := refreshSSOAccessToken
+	defer func() {
+		refreshSSOAccessToken = originalRefreshSSOAccessToken
+	}()
+
+	var gotCacheData SSOCacheConfig
+	refreshSSOAccessToken = func(cacheData SSOCacheConfig) (string, error) {
+		gotCacheData = cacheData
+		return "refreshed-token", nil
+	}
+
+	token, err := GetSSOToken(SSOConfig{StartURL: testStartURL}, home)
+	if err != nil {
+		t.Fatalf("GetSSOToken returned error: %v", err)
+	}
+	if token != "refreshed-token" {
+		t.Fatalf("unexpected token %q", token)
+	}
+	if gotCacheData.ClientID != "fixture-client-id" || gotCacheData.ClientSecret != "fixture-client-secret" || gotCacheData.RefreshToken != "fixture-refresh-token" {
+		t.Fatalf("refresh received unexpected cache data %#v", gotCacheData)
+	}
+}
+
+func TestGetSSOTokenReturnsRefreshErrorForExpiredSelectedToken(t *testing.T) {
+	home := testutil.AWSHome(t)
+	writeDeterministicCache(t, home, testStartURL, refreshableCacheJSON(testStartURL, "expired-token", "2000-01-02T03:04:05Z"))
+
+	originalRefreshSSOAccessToken := refreshSSOAccessToken
+	defer func() {
+		refreshSSOAccessToken = originalRefreshSSOAccessToken
+	}()
+
+	refreshSSOAccessToken = func(SSOCacheConfig) (string, error) {
+		return "", errors.New("refresh failed")
+	}
+
+	_, err := GetSSOToken(SSOConfig{StartURL: testStartURL}, home)
+	if err == nil || !strings.Contains(err.Error(), "refresh failed") {
+		t.Fatalf("expected refresh error, got %v", err)
+	}
+}
+
 func TestGetSSOTokenFallsBackWhenDeterministicTokenExpired(t *testing.T) {
 	home := testutil.AWSHome(t)
 	writeDeterministicCache(t, home, testStartURL, validCacheJSON(testStartURL, "expired-token", "2000-01-02T03:04:05Z"))
@@ -152,6 +199,18 @@ func validCacheJSON(startURL string, token string, expiresAt string) string {
   "startUrl": "` + startURL + `",
   "accessToken": "` + token + `",
   "expiresAt": "` + expiresAt + `"
+}`
+}
+
+func refreshableCacheJSON(startURL string, token string, expiresAt string) string {
+	return `{
+  "startUrl": "` + startURL + `",
+  "region": "us-west-2",
+  "accessToken": "` + token + `",
+  "expiresAt": "` + expiresAt + `",
+  "clientId": "fixture-client-id",
+  "clientSecret": "fixture-client-secret",
+  "refreshToken": "fixture-refresh-token"
 }`
 }
 

@@ -8,8 +8,11 @@ type SSOConfig struct {
 }
 
 type SSOCacheConfig struct {
-	StartURL    string `json:"startUrl"`
-	Region      string `json:"region"`
-	AccessToken string `json:"accessToken"`
-	ExpiresAt   string `json:"expiresAt"`
+	StartURL     string `json:"startUrl"`
+	Region       string `json:"region"`
+	AccessToken  string `json:"accessToken"`
+	ExpiresAt    string `json:"expiresAt"`
+	ClientID     string `json:"clientId"`
+	ClientSecret string `json:"clientSecret"`
+	RefreshToken string `json:"refreshToken"`
 }
