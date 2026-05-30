@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"text/tabwriter"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sso"
 	cfg "github.com/jaxxstorm/aws-sso-creds/pkg/config"
@@ -24,6 +25,17 @@ const (
 var (
 	results   int32 // Adjusted to int32 as per v2 requirements
 	accountID string
+)
+
+type listAccountRolesAPI interface {
+	ListAccountRoles(context.Context, *sso.ListAccountRolesInput, ...func(*sso.Options)) (*sso.ListAccountRolesOutput, error)
+}
+
+var (
+	loadDefaultConfig = config.LoadDefaultConfig
+	newSSOClient      = func(awsCfg aws.Config) listAccountRolesAPI {
+		return sso.NewFromConfig(awsCfg)
+	}
 )
 
 func Command() *cobra.Command {
@@ -54,7 +66,7 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
 			}
 
-			cfg, err := config.LoadDefaultConfig(context.TODO(),
+			awsCfg, err := loadDefaultConfig(context.TODO(),
 				config.WithRegion(ssoConfig.Region),
 				config.WithSharedConfigProfile(profile),
 			)
@@ -62,7 +74,7 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error loading AWS config: %v", err)
 			}
 
-			svc := sso.NewFromConfig(cfg)
+			svc := newSSOClient(awsCfg)
 
 			accountID = args[0]
 

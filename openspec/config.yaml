@@ -1,0 +1,44 @@
+schema: spec-driven
+
+context: |
+  aws-sso-creds is a small Go command-line utility for turning AWS IAM Identity Center
+  (formerly AWS SSO) login state into temporary AWS credentials that older tools,
+  SDKs, shells, and scripts can consume.
+
+  The CLI is built with Cobra and Viper under cmd/aws-sso-creds. Shared behavior
+  lives in pkg/config and pkg/credentials. The code reads AWS profile settings from
+  ~/.aws/config, supports both legacy inline SSO profile keys and sso-session
+  sections, discovers valid access tokens in ~/.aws/sso/cache, and calls the AWS SDK
+  for Go v2 SSO APIs to retrieve role credentials.
+
+  Primary user workflows:
+  - get: print temporary credentials for a profile, with optional JSON output.
+  - export: emit POSIX shell export statements suitable for eval.
+  - export-ps: emit PowerShell environment assignments.
+  - exec: run a command with temporary AWS credentials injected into its environment.
+  - helper: emit AWS credential_process-compatible JSON.
+  - set: write temporary credentials into a named AWS credentials/config profile.
+  - list accounts / list roles: inspect AWS SSO account and role access.
+
+  Compatibility matters more than architectural novelty. Prefer simple, explicit CLI
+  behavior, stable command output, and small changes that preserve existing shell
+  scripting use cases. Avoid logging or persisting secret values except where a command
+  explicitly exists to print/export/write credentials.
+
+  Tests should avoid real AWS calls and real home directories. When adding coverage,
+  favor temporary directories, fixture AWS config/cache files, and narrow tests around
+  parsing, token selection, output formatting, and command behavior.
+
+rules:
+  proposal:
+    - State the affected CLI commands and user-visible output changes.
+    - Call out any impact to AWS config parsing, SSO cache handling, credential_process output, or shell scripting compatibility.
+    - Include non-goals when a change touches AWS auth semantics or credential storage.
+  design:
+    - Prefer existing Cobra/Viper command structure and pkg/config/pkg/credentials boundaries.
+    - Keep AWS SDK interactions isolated behind reusable helpers where practical.
+    - Treat credentials, access tokens, profile files, and cache files as sensitive data in examples and diagnostics.
+  tasks:
+    - Include focused tests or a clear reason tests are not practical.
+    - Include at least one manual verification command for CLI behavior when the change affects command output.
+    - Keep tasks small enough to review against one command or package at a time.

@@ -3,12 +3,18 @@ package exec
 import (
 	"fmt"
 	"os"
-	"os/exec"
+	osexec "os/exec"
 	"syscall"
 
 	"github.com/jaxxstorm/aws-sso-creds/pkg/credentials"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	getSSOCredentials = credentials.GetSSOCredentials
+	lookPath          = osexec.LookPath
+	execCommand       = syscall.Exec
 )
 
 func Command() *cobra.Command {
@@ -24,12 +30,12 @@ func Command() *cobra.Command {
 			profile := viper.GetString("profile")
 			homeDir := viper.GetString("home-directory")
 
-			creds, _, cfg, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, _, cfg, err := getSSOCredentials(profile, homeDir)
 			if err != nil {
 				return err
 			}
 
-			binary, err := exec.LookPath(args[0])
+			binary, err := lookPath(args[0])
 			if err != nil {
 				return fmt.Errorf("command not found: %s", args[0])
 			}
@@ -42,7 +48,7 @@ func Command() *cobra.Command {
 				fmt.Sprintf("AWS_DEFAULT_REGION=%s", cfg.Region),
 			)
 
-			return syscall.Exec(binary, args, env)
+			return execCommand(binary, args, env)
 		},
 	}
 

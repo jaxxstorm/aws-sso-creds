@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"text/tabwriter"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sso"
 	cfg "github.com/jaxxstorm/aws-sso-creds/pkg/config"
@@ -23,6 +24,17 @@ const (
 
 var (
 	results int32 // Adjusted to int32 as per v2 requirements
+)
+
+type listAccountsAPI interface {
+	ListAccounts(context.Context, *sso.ListAccountsInput, ...func(*sso.Options)) (*sso.ListAccountsOutput, error)
+}
+
+var (
+	loadDefaultConfig = config.LoadDefaultConfig
+	newSSOClient      = func(awsCfg aws.Config) listAccountsAPI {
+		return sso.NewFromConfig(awsCfg)
+	}
 )
 
 func Command() *cobra.Command {
@@ -53,7 +65,7 @@ func Command() *cobra.Command {
 			}
 
 			// Load default AWS config
-			cfg, err := config.LoadDefaultConfig(context.TODO(),
+			awsCfg, err := loadDefaultConfig(context.TODO(),
 				config.WithRegion(ssoConfig.Region),
 				config.WithSharedConfigProfile(profile),
 			)
@@ -61,7 +73,7 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error loading AWS config: %v", err)
 			}
 
-			svc := sso.NewFromConfig(cfg)
+			svc := newSSOClient(awsCfg)
 
 			accounts, err := svc.ListAccounts(context.TODO(), &sso.ListAccountsInput{
 				AccessToken: &token,

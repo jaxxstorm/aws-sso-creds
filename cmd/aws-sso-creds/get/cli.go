@@ -13,6 +13,8 @@ import (
 	"github.com/logrusorgru/aurora"
 )
 
+var getSSOCredentials = credentials.GetSSOCredentials
+
 type JSON struct {
 	AwsAccessKeyID     string    `json:"aws_access_key_id"`
 	AwsSecretAccessKey string    `json:"aws_secret_access_key"`
@@ -34,7 +36,7 @@ func Command() *cobra.Command {
 			homeDir := viper.GetString("home-directory")
 			exportJSON, _ := cmd.Flags().GetBool("json")
 
-			creds, ssoConfig, _, err := credentials.GetSSOCredentials(profile, homeDir)
+			creds, ssoConfig, _, err := getSSOCredentials(profile, homeDir)
 
 			if err != nil {
 				return err
