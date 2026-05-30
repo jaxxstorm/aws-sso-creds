@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sso/types"
 	"github.com/jaxxstorm/aws-sso-creds/internal/testcreds"
 	"github.com/jaxxstorm/aws-sso-creds/internal/testutil"
+	cfg "github.com/jaxxstorm/aws-sso-creds/pkg/config"
 	"github.com/spf13/viper"
 )
 
@@ -80,7 +81,7 @@ sso_region = us-west-2
 sso_account_id = 123456789012
 sso_role_name = Admin
 `)
-	testutil.WriteSSOCache(t, home, "token.json", `{
+	testutil.WriteSSOCache(t, home, cfg.SSOCacheFileName("https://example.awsapps.com/start"), `{
   "startUrl": "https://example.awsapps.com/start",
   "accessToken": "fixture-access-token",
   "expiresAt": "2999-01-02T03:04:05Z"

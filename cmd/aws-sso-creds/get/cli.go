@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/jaxxstorm/aws-sso-creds/pkg/contract"
 	"github.com/jaxxstorm/aws-sso-creds/pkg/credentials"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -59,9 +60,9 @@ func Command() *cobra.Command {
 				fmt.Println(aurora.Sprintf("Your temporary credentials for account %s are:", aurora.White(ssoConfig.AccountID)))
 				fmt.Println("")
 
-				fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId)
-				fmt.Fprintln(os.Stdout, "AWS_SECRET_ACCESS_KEY\t", *creds.RoleCredentials.SecretAccessKey)
-				fmt.Fprintln(os.Stdout, "AWS_SESSION_TOKEN\t", *creds.RoleCredentials.SessionToken)
+				contract.IgnoreIoError(fmt.Fprintln(os.Stdout, "AWS_ACCESS_KEY_ID\t", *creds.RoleCredentials.AccessKeyId))
+				contract.IgnoreIoError(fmt.Fprintln(os.Stdout, "AWS_SECRET_ACCESS_KEY\t", *creds.RoleCredentials.SecretAccessKey))
+				contract.IgnoreIoError(fmt.Fprintln(os.Stdout, "AWS_SESSION_TOKEN\t", *creds.RoleCredentials.SessionToken))
 
 				fmt.Println("")
 
