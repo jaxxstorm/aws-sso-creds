@@ -1,52 +1,77 @@
 package config
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-// GetSSOToken loops through all the caches files and extracts a valid token to use
-func GetSSOToken(files []fs.DirEntry, ssoConfig SSOConfig, homedir string) (string, error) {
+const noValidCacheFilesError = "no valid cache files found, you might need to run aws sso login"
 
-	if len(files) > 0 {
-		// loop through all the files
-		for _, file := range files {
-			// read the contents into a JSON byte
-			jsonContent, err := os.ReadFile(filepath.Join(homedir, ".aws", "sso", "cache", file.Name()))
-			if err != nil {
-				return "", fmt.Errorf("error reading aws SSO cache file: %v", err)
-			}
+var errInvalidSSOCache = errors.New(noValidCacheFilesError)
 
-			// initialize some SSOCacheConfig
-			var cacheData SSOCacheConfig
+// SSOCacheFileName returns the AWS SSO cache file name for a start URL.
+func SSOCacheFileName(startURL string) string {
+	sum := sha1.Sum([]byte(startURL))
+	return hex.EncodeToString(sum[:]) + ".json"
+}
 
-			if err := json.Unmarshal(jsonContent, &cacheData); err != nil {
-				return "", fmt.Errorf("error marshalling JSON data from cache file: %v", err)
-			}
+// GetSSOToken reads the deterministic SSO cache file and extracts a valid token to use.
+// If AWS has stored the token under another cache key, it falls back to scanning
+// the cache directory for compatibility with existing AWS CLI cache layouts.
+func GetSSOToken(ssoConfig SSOConfig, homedir string) (string, error) {
+	cacheDir := filepath.Join(homedir, ".aws", "sso", "cache")
+	token, err := getSSOTokenFromCacheFile(filepath.Join(cacheDir, SSOCacheFileName(ssoConfig.StartURL)), ssoConfig)
+	if err == nil {
+		return token, nil
+	}
 
-			// check if the file has a start url, if it doesn't, ignore it
-			if cacheData.StartURL == ssoConfig.StartURL {
-				// check if the file has an expiry time, if it doesn't ignore it
-				if cacheData.ExpiresAt != "" {
-					t, err := time.Parse(time.RFC3339, strings.Replace(cacheData.ExpiresAt, "UTC", "+00:00", -1))
-					if err != nil {
-						continue
-					}
-					if t.Unix() > time.Now().Unix() {
-						return cacheData.AccessToken, nil
-					}
+	files, err := os.ReadDir(cacheDir)
+	if err != nil {
+		return "", errInvalidSSOCache
+	}
 
-				}
-			}
-			continue
+	for _, file := range files {
+		token, err := getSSOTokenFromCacheFile(filepath.Join(cacheDir, file.Name()), ssoConfig)
+		if err == nil {
+			return token, nil
+		}
+		if !errors.Is(err, errInvalidSSOCache) {
+			return "", err
 		}
 	}
 
-	return "", fmt.Errorf("no valid cache files found, you might need to run aws sso login")
+	return "", errInvalidSSOCache
+}
 
+func getSSOTokenFromCacheFile(path string, ssoConfig SSOConfig) (string, error) {
+	jsonContent, err := os.ReadFile(path)
+	if err != nil {
+		return "", errInvalidSSOCache
+	}
+
+	var cacheData SSOCacheConfig
+	if err := json.Unmarshal(jsonContent, &cacheData); err != nil {
+		return "", fmt.Errorf("error marshalling JSON data from cache file: %v", err)
+	}
+
+	if cacheData.StartURL != ssoConfig.StartURL || cacheData.ExpiresAt == "" {
+		return "", errInvalidSSOCache
+	}
+
+	t, err := time.Parse(time.RFC3339, strings.Replace(cacheData.ExpiresAt, "UTC", "+00:00", -1))
+	if err != nil {
+		return "", errInvalidSSOCache
+	}
+	if t.Unix() <= time.Now().Unix() {
+		return "", errInvalidSSOCache
+	}
+
+	return cacheData.AccessToken, nil
 }

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -196,14 +194,4 @@ func assertSSOConfig(t *testing.T, got *SSOConfig, want SSOConfig) {
 	if *got != want {
 		t.Fatalf("unexpected config:\n got: %#v\nwant: %#v", *got, want)
 	}
-}
-
-func readCacheEntries(t *testing.T, home string) []os.DirEntry {
-	t.Helper()
-
-	files, err := os.ReadDir(filepath.Join(home, ".aws", "sso", "cache"))
-	if err != nil {
-		t.Fatalf("read cache entries: %v", err)
-	}
-	return files
 }

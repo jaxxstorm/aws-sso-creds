@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"text/tabwriter"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -56,12 +55,7 @@ func Command() *cobra.Command {
 				return fmt.Errorf("error retrieving SSO config: %w", err)
 			}
 
-			cacheFiles, err := os.ReadDir(filepath.Join(homeDir, ".aws", "sso", "cache"))
-			if err != nil {
-				return fmt.Errorf("error retrieving cache files - perhaps you need to login?: %w", err)
-			}
-
-			token, err := cfg.GetSSOToken(cacheFiles, *ssoConfig, homeDir)
+			token, err := cfg.GetSSOToken(*ssoConfig, homeDir)
 			if err != nil {
 				return fmt.Errorf("error retrieving SSO token from cache files: %v", err)
 			}
