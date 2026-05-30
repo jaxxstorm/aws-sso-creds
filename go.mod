@@ -8,10 +8,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.19
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.36.2
 	github.com/bigkevmcd/go-configparser v0.0.0-20251110123434-de62ed489b4f
-	github.com/go-git/go-git/v5 v5.19.1
+	github.com/jaxxstorm/vers v0.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/pulumi/pulumictl v0.0.50
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 )
@@ -37,6 +36,7 @@ require (
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.9.0 // indirect
+	github.com/go-git/go-git/v5 v5.19.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
