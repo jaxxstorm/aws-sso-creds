@@ -34,6 +34,7 @@ homebrew_casks:
     repository:
       owner: jaxxstorm
       name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TOKEN }}"
     commit_author:
       name: GitHub Actions
       email: bot@leebriggs.co.uk
@@ -48,6 +49,7 @@ scoops:
       owner: jaxxstorm
       name: scoop-bucket
       branch: main
+      token: "{{ .Env.HOMEBREW_TOKEN }}"
     commit_author:
       name: bot
       email: bot@leebriggs.co.uk
