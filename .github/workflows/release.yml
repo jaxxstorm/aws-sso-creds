@@ -10,7 +10,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Unshallow clone
         run: git fetch --prune --unshallow
       - name: Install Go 1.21
