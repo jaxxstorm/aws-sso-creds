@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.20
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.19
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.36.2
-	github.com/bigkevmcd/go-configparser v0.0.0-20251110123434-de62ed489b4f
+	github.com/bigkevmcd/go-configparser v0.0.0-20260823144315-8f2e819df55d
 	github.com/jaxxstorm/vers v0.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
